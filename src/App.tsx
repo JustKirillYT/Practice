@@ -10,7 +10,9 @@ function App() {
   return (
     <BrowserRouter>
     <Header/>
-    <BorderBar/>
+    <BorderBar>
+      <li>Улюлю</li>
+    </BorderBar>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/user/:id" element={<UserProfile />} />
