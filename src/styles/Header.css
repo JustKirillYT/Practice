@@ -1,0 +1,30 @@
+.header {
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .header nav ul li a {
+    color: white;
+    text-decoration: none;
+  }
+
+  .logo {
+    width: 100px;
+  height: 100px; /* если высота не будет задана явна, она будет равна 100% */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  }

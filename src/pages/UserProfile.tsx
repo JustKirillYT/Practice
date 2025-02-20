@@ -1,15 +1,5 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-
+import React from "react";
 function UserProfile() {
-  const { id } = useParams();
-
-  return (
-    <div>
-      <h1>Профиль пользователя</h1>
-      <p>ID пользователя: {id}</p>
-    </div>
-  );
+  return <button></button>
 }
-
 export default UserProfile;
