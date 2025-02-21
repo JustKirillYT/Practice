@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background-color: #e9c46a;
 }
 
 .content {
@@ -13,4 +14,5 @@ main {
   flex: 1;
   margin-left: 200px; /* Ширина Sidebar */
   padding: 1rem;
+  background-color: #e9c46a;
 }

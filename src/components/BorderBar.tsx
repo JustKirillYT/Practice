@@ -22,10 +22,6 @@ interface SliderProps {
         {children}
       </div>
       <div className="content">
-      <ul>
-        <li><Link to="/">Главная</Link></li>
-        <li><Link to="UserProfile">Профиль</Link></li>
-      </ul>
       </div>
     </div>
   );

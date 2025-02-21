@@ -6,7 +6,7 @@
   .slider {
     width: 250px;
     height: 100vh;
-    background-color: #333;
+    background-color: #ffaf72;
     color: white;
     padding: 20px;
     box-sizing: border-box;
@@ -29,12 +29,12 @@
   .content {
     flex-grow: 1;
     padding: 20px;
-    background-color: #f4f4f4;
+    background-color: transparent;
     transition: transform 0.3s ease;
   }
   
   .slider-container.hidden .slider {
-    transform: translateX(-50%);
+    transform: translateX(-80%);
   }
   
   .slider-container.hidden .content {
