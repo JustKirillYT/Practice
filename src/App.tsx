@@ -1,25 +1,20 @@
 import React from "react";
 import './App.css';
 import './styles/BorderBar.css';
-import Header from './components/Header';
-import BorderBar from './components/BorderBar';
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import UserProfile from "./pages/UserProfile";
-import {Divider, Title1, Title2} from "./styles/components"
+import UserProfile from "./pages/User/UserProfile";
+import MainPage from "./components/Main/MainPage";
+import Register from './pages/Sign/Register';
 
 function App() {
   return (
     <BrowserRouter>
-    <Header/>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<MainPage />}/>
+        <Route path="/register" element={<Register/>}/>
         <Route path="/UserProfile" element={<UserProfile />} />
       </Routes>
-      
-    </BrowserRouter>
-
-    
+      </BrowserRouter>
   );
 }
 export default App;

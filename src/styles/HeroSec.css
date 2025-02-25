@@ -1,0 +1,62 @@
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Занимает всю высоту экрана */
+    background: linear-gradient(45deg, #000000da, #000000); /* Градиентный фон */
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .hero-content {
+    max-width: 800px;
+  }
+  
+  .hero h1 {
+    font-size: 48px;
+    color: #cc8b36;
+    margin-bottom: 20px;
+  }
+  
+  .hero p {
+    font-size: 24px;
+    color: #faa940;
+    margin-bottom: 40px;
+  }
+  
+  .hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Расстояние между кнопками */
+  }
+  
+  .primary-button {
+    background-color: #2A5C8D;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .primary-button:hover {
+    background-color: #1E456E;
+  }
+  
+  .secondary-button {
+    background-color: transparent;
+    color: #2A5C8D;
+    padding: 12px 24px;
+    border: 2px solid #2A5C8D;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .secondary-button:hover {
+    background-color: #2A5C8D;
+    color: white;
+  }
