@@ -1,0 +1,13 @@
+.footer {
+    display:flex;
+    background: tomato;
+    justify-content: start;
+
+}
+.footer dt {
+    margin: 25px;
+    font-size:8pt;
+    flex-direction: column;
+    vertical-align: text-top;
+    background-color: yellow;
+}
