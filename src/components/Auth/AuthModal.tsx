@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import styles from '../../styles/Auth/AuthModal.module.css';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -13,12 +14,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     password: '',
   });
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add(styles.mdPerspective);
+    } else {
+      document.body.classList.remove(styles.mdPerspective);
+      // Сброс формы при закрытии
+      setFormData({ name: '', email: '', password: '' });
+    }
+  }, [isOpen]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -33,65 +41,67 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div >
-      <div>
-        <button onClick={onClose}>×</button>
-        <h2>{isLogin ? 'Вход' : 'Регистрация'}</h2>
-        <form onSubmit={handleSubmit}>
+    <>
+      <div className={`${styles.mdModal} ${isOpen ? styles.mdShow : ''}`}>
+        <button className={styles.closeButton} onClick={onClose}>×</button>
+        
+        <h2 style={{ textAlign: 'center', marginBottom: '25px', color: '#333' }}>
+          {isLogin ? 'Вход' : 'Регистрация'}
+        </h2>
+
+        <form onSubmit={handleSubmit} style={{ padding: '0 25px' }}>
           {!isLogin && (
-            <div>
+            <div className={styles.formGroup}>
               <label>Имя:</label>
-              <input type="text" name="name" value={formData.name} onChange={handleChange} />
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
             </div>
           )}
-          <div>
-            <label>Email:</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} />
-          </div>
-          <div>
-            <label>Пароль:</label>
-            <input type="password" name="password" value={formData.password} onChange={handleChange} />
-          </div>
-          <button type="submit">{isLogin ? 'Войти' : 'Зарегистрироваться'}</button>
-        </form>
-        <button onClick={() => setIsLogin(!isLogin)}>
-          {isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
-        </button>
-      </div>
-    </div>
-  );
-};
 
-const styles = {
-  overlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000,
-  },
-  modal: {
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '8px',
-    width: '300px',
-    position: 'relative',
-    zIndex: 1001,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: '10px',
-    right: '10px',
-    background: 'none',
-    border: 'none',
-    fontSize: '20px',
-    cursor: 'pointer',
-  },
+          <div className={styles.formGroup}>
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Пароль:</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <button type="submit" className={styles.submitButton}>
+            {isLogin ? 'Войти' : 'Зарегистрироваться'}
+          </button>
+
+          <button
+            type="button"
+            className={styles.toggleButton}
+            onClick={() => setIsLogin(!isLogin)}
+          >
+            {isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
+          </button>
+        </form>
+      </div>
+
+      <div className={`${styles.mdOverlay} ${isOpen ? styles.mdShow : ''}`} onClick={onClose} />
+    </>
+  );
 };
 
 export default AuthModal;

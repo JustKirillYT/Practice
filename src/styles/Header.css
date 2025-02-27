@@ -1,57 +1,54 @@
 .header {
-    background-color: #e76f51;
-    color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px 20px;
     display: flex;
-    justify-content: space-between;
-   
-  }
-  
-  .header nav ul {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .header nav ul li a {
-    color: white;
-    text-decoration: none;
-  }
-
-  .logo {
-  width: 64px;
-  height: 64px; 
-  display: flex;
-  margin: 0px;
-  }
-
-  .header div log {
-    display: flex;
-    margin: 10px;
-    justify-content: flex-end;
-  }
-
- .div signin border {
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  background-color: white;
- }
+  transition: background-color 0.3s ease;
+  z-index: 1000;
+}
 
- .button {
-    padding: 0;
-    border: none;
-    font: inherit;
-    color: inherit;
-    background-color: transparent;
-    cursor: pointer;
- }
+.header.scrolled {
+  background-color: #5c1313; /* Цвет фона при прокрутке */
+}
 
-.button withdesign {
-  border:1px;
-  width:auto;
-  height: 100%;
-  color:white;
-  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  font-size: 30pt;
-  background-color: #000000;
+.header.transparent {
+  background-color: transparent; /* Прозрачный фон наверху */
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+.nav {
+  display: flex;
+  gap: 20px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.nav a {
+  text-decoration: none;
+  color: white;
+  font-size: 24pt;
+}
+
+.button {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  margin-right: 35px;
+}
+
+.button:hover {
+  background-color: #bd3030;
 }
