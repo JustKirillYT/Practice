@@ -46,15 +46,18 @@ const Buttons = styled.button`
   }
 `;
 
-const Header = () => {
+interface HeaderProps {
+  onOpenAuthModal: () => void; // Функция для открытия модального окна
+}
+
+const Header: React.FC<HeaderProps> = ({ onOpenAuthModal }) => {
   return (
     <HeaderContainer>
       <Logo>ShareYourHappiness</Logo>
       <div>
-        <Buttons>Войти</Buttons>
-        <Link to="/register">
-        <Buttons>Регистрация</Buttons>
-        </Link>
+        {/* Кнопка "Войти" открывает модальное окно */}
+        <Buttons onClick={onOpenAuthModal}>Войти</Buttons>
+          <Buttons>Регистрация</Buttons>
       </div>
     </HeaderContainer>
   );
