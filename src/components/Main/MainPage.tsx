@@ -3,7 +3,8 @@ import HeroSection from './HeroSec';
 import Header from "..//../components/Header"
 import Footer from '../Footer';
 import UserCard from '../UserCard/UserCard';
-import UsersList from '../Auth/UsersList';
+import MainCarousel from './MainCarousel';
+import './MainPage.css';
 
 
 const MainPage: React.FC = () => {
@@ -14,7 +15,7 @@ const MainPage: React.FC = () => {
   return (
     <div>
         <HeroSection/>
-        <UsersList/>
+        <MainCarousel/>
     <Footer/>
     </div>
 )};

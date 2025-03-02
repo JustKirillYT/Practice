@@ -5,20 +5,29 @@ interface UserCardProps {
   avatar: string; // Ссылка на аватарку
   name: string; // Имя пользователя
   description: string; // Описание
-  onDonate: () => void; // Обработчик клика на кнопку "Пожертвовать"
+  isCenter?: boolean; // Флаг, указывающий, что карточка центральная
 }
 
-const CardContainer = styled.div`
+const CardContainer = styled.div<{ isCenter?: boolean }>`
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 16px;
   text-align: center;
-  max-width: 200px;
+  width: ${({ isCenter }) => (isCenter ? '250px' : '200px')};
+  height: ${({ isCenter }) => (isCenter ? '250px' : '200px')};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  cursor: ${({ isCenter }) => (isCenter ? 'pointer' : 'default')};
+  opacity: ${({ isCenter }) => (isCenter ? '1' : '0.6')};
+  filter: ${({ isCenter }) => (isCenter ? 'none' : 'brightness(0.8)')};
 `;
 
 const Avatar = styled.img`
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
 `;
 
@@ -30,22 +39,12 @@ const Description = styled.p`
   color: #666;
 `;
 
-const DonateButton = styled.button`
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-`;
-
-const UserCard = ({ avatar, name, description, onDonate }: UserCardProps) => {
+const UserCard = ({ avatar, name, description, isCenter }: UserCardProps) => {
   return (
-    <CardContainer>
+    <CardContainer isCenter={isCenter}>
       <Avatar src={avatar} alt={name} />
       <Name>{name}</Name>
       <Description>{description}</Description>
-      <DonateButton onClick={onDonate}>Пожертвовать</DonateButton>
     </CardContainer>
   );
 };

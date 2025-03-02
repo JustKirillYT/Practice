@@ -1,26 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../../styles/Auth/AuthModal.module.css';
+import { loginUser, registerUser } from '../../api'; // Импортируйте API
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onLogin: (userData: { login: string; avatarUrl: string }) => void;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    login: '',
     password: '',
   });
+  const [error, setError] = useState<string | null>(null);
+
+  // Функция для валидации пароля
+  const validatePassword = (password: string): string | null => {
+    if (password.length < 6) {
+      return 'Пароль должен содержать минимум 6 символов';
+    }
+    if (!/[A-Z]/.test(password)) {
+      return 'Пароль должен содержать хотя бы одну заглавную букву';
+    }
+    if (!/[a-z]/.test(password)) {
+      return 'Пароль должен содержать хотя бы одну строчную букву';
+    }
+    return null;
+  };
 
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add(styles.mdPerspective);
     } else {
       document.body.classList.remove(styles.mdPerspective);
-      // Сброс формы при закрытии
-      setFormData({ name: '', email: '', password: '' });
+      setFormData({ login: '', password: '' }); // Сброс формы при закрытии
+      setError(null); // Сброс ошибки при закрытии
     }
   }, [isOpen]);
 
@@ -29,12 +45,32 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLogin) {
-      console.log('Вход:', formData.email, formData.password);
-    } else {
-      console.log('Регистрация:', formData.name, formData.email, formData.password);
+    setError(null);
+
+    // Валидация пароля (только для регистрации)
+    if (!isLogin) {
+      const passwordError = validatePassword(formData.password);
+      if (passwordError) {
+        setError(passwordError);
+        return;
+      }
+    }
+
+    try {
+      let response;
+      if (isLogin) {
+        response = await loginUser(formData);
+      } else {
+        response = await registerUser(formData);
+      }
+
+      localStorage.setItem('token', response.token);
+      onLogin(response.user);
+      onClose();
+    } catch (err) {
+      setError('Неверный логин или пароль');
     }
   };
 
@@ -49,26 +85,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           {isLogin ? 'Вход' : 'Регистрация'}
         </h2>
 
-        <form onSubmit={handleSubmit} style={{ padding: '0 25px' }}>
-          {!isLogin && (
-            <div className={styles.formGroup}>
-              <label>Имя:</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          )}
+        {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
 
+        <form onSubmit={handleSubmit} style={{ padding: '0 25px' }}>
           <div className={styles.formGroup}>
-            <label>Email:</label>
+            <label>Логин:</label>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              name="login"
+              value={formData.login}
               onChange={handleChange}
               required
             />

@@ -1,65 +1,76 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import UserCard from '../../components/UserCard/UserCard';
-
-const ProfileContainer = styled.div`
-  padding: 20px;
-`;
-
-const Background = styled.div<{ background: string }>`
-  background-image: url(${(props) => props.background});
-  background-size: cover;
-  background-position: center;
-  padding: 20px;
-  border-radius: 8px;
-`;
-
-const AvatarUpload = styled.input`
-  margin-bottom: 20px;
-`;
-
-const BackgroundUpload = styled.input`
-  margin-bottom: 20px;
-`;
+import './UserProfile.css';
 
 const UserProfile = () => {
   const [avatar, setAvatar] = useState('https://via.placeholder.com/100');
   const [background, setBackground] = useState('https://via.placeholder.com/400x200');
+  const [balance, setBalance] = useState(1000); // Пример баланса
 
-  // Указываем тип для event
+  // Обработчик изменения аватарки
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]; // Используем optional chaining на случай, если files = null
+    const file = event.target.files?.[0];
     if (file) {
       setAvatar(URL.createObjectURL(file));
     }
   };
 
-  // Указываем тип для event
+  // Обработчик изменения фона
   const handleBackgroundChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]; // Используем optional chaining
+    const file = event.target.files?.[0];
     if (file) {
       setBackground(URL.createObjectURL(file));
     }
   };
 
+  // Обработчик пожертвования
   const handleDonate = () => {
     alert('Спасибо за пожертвование!');
   };
 
   return (
-    <ProfileContainer>
+    <div className="profile-container">
       <h1>Мой профиль</h1>
-      <AvatarUpload type="file" accept="image/*" onChange={handleAvatarChange} />
-      <BackgroundUpload type="file" accept="image/*" onChange={handleBackgroundChange} />
-      <Background background={background}>
-        <UserCard
-          avatar={avatar}
-          name="Иван Иванов"
-          description="Привет! Я люблю программирование."
-          onDonate={handleDonate}
+
+      {/* Загрузка аватарки */}
+      <label className="avatar-label">
+        Загрузить аватарку
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleAvatarChange}
+          className="avatar-upload"
         />
-      </Background>
-    </ProfileContainer>
+      </label>
+
+      {/* Загрузка фона */}
+      <label className="background-label">
+        Загрузить фон
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleBackgroundChange}
+          className="background-upload"
+        />
+      </label>
+
+      {/* Фон и информация о пользователе */}
+      <div className="profile-background" style={{ backgroundImage: `url(${background})` }}>
+        <div className="profile-info">
+          <img src={avatar} alt="Avatar" className="profile-avatar" />
+          <h2 className="profile-name">Иван Иванов</h2>
+          <p className="profile-description">Привет! Я люблю программирование.</p>
+          <button className="donate-button" onClick={handleDonate}>
+            Поддержать
+          </button>
+        </div>
+      </div>
+
+      {/* Блок баланса */}
+      <div className="balance-block">
+        <h3 className="balance-title">Ваш баланс</h3>
+        <p className="balance-amount">{balance} ₽</p>
+      </div>
+    </div>
   );
 };
 

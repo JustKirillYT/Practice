@@ -4,9 +4,14 @@ import '../styles/Header.css';
 
 interface HeaderProps {
   onOpenAuthModal: () => void;
+  user: {
+    login: string;
+    avatarUrl: string;
+  } | null;
+  onLogout?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onOpenAuthModal }) => {
+const Header: React.FC<HeaderProps> = ({ onOpenAuthModal, user, onLogout }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -22,9 +27,26 @@ const Header: React.FC<HeaderProps> = ({ onOpenAuthModal }) => {
     <header className={`header ${isScrolled ? 'scrolled' : 'transparent'}`}>
       <div className="logo">ShareYourHappiness</div>
       <nav className="nav">
+        {/* Дополнительные ссылки или элементы навигации */}
       </nav>
-      <div >
-        <button className="button"  onClick={onOpenAuthModal}>SingIn</button>
+      <div>
+        {user ? (
+          <div className="user-info">
+            <Link to="/profile">
+              <img src={user.avatarUrl} alt="Avatar" className="avatar" />
+              <span>{user.login}</span>
+            </Link>
+            {onLogout && (
+              <button className="button" onClick={onLogout}>
+                Logout
+              </button>
+            )}
+          </div>
+        ) : (
+          <button className="button" onClick={onOpenAuthModal}>
+            SignIn
+          </button>
+        )}
       </div>
     </header>
   );

@@ -7,25 +7,37 @@ import MainPage from "./components/Main/MainPage";
 import Register from "./pages/Sign/Register";
 import './App.css';
 import './styles/BorderBar.css';
+import MainCarousel from "./components/Main/MainCarousel";
 
 const App: React.FC = () => {
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user, setUser] = useState<{ login: string; avatarUrl: string } | null>(null);
+
+  const handleLogin = (userData: { login: string; avatarUrl: string }) => {
+    setUser(userData);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+  };
 
   return (
     <BrowserRouter>
-      {/* Header отображается на всех страницах */}
-      <Header onOpenAuthModal={() => setIsAuthModalOpen(true)} />
-
-      {/* Основные маршруты */}
+      <Header
+        onOpenAuthModal={() => setIsModalOpen(true)}
+        user={user}
+        onLogout={handleLogout}
+      />
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/UserProfile" element={<UserProfile />} />
       </Routes>
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
+        <AuthModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onLogin={handleLogin}
+        />
     </BrowserRouter>
   );
 };
