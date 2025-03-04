@@ -13,7 +13,7 @@ const MainPage: React.FC = () => {
   }
 
   return (
-    <div>
+    <div >
         <HeroSection/>
         <MainCarousel/>
     <Footer/>

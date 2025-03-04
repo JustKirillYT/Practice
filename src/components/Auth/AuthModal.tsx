@@ -61,16 +61,30 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
     try {
       let response;
       if (isLogin) {
+        // Вход
         response = await loginUser(formData);
       } else {
+        // Регистрация
         response = await registerUser(formData);
       }
 
+      // Сохраняем токен в localStorage
       localStorage.setItem('token', response.token);
-      onLogin(response.user);
+
+      // Передаем данные пользователя в родительский компонент
+      onLogin({
+        login: response.user.login,
+        avatarUrl: response.user.avatarUrl || 'https://avatars.mds.yandex.net/i?id=373b48b71c8b3fa6d7d5f9c5dbdf5457_sr-4826347-images-thumbs&n=13', // Заглушка для аватара
+      });
+
+      // Закрываем модальное окно
       onClose();
     } catch (err) {
-      setError('Неверный логин или пароль');
+      if (err instanceof Error) {
+        setError(err.message); // Отображаем ошибку
+      } else {
+        setError('Неизвестная ошибка');
+      }
     }
   };
 

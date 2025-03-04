@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenAuthModal, user, onLogout }) => {
       <div>
         {user ? (
           <div className="user-info">
-            <Link to="/profile">
+            <Link to="/UserProfile">
               <img src={user.avatarUrl} alt="Avatar" className="avatar" />
               <span>{user.login}</span>
             </Link>
