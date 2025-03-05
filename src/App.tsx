@@ -1,10 +1,9 @@
-// App.tsx
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
 import Header from "./components/Header";
 import AuthModal from "./components/Auth/AuthModal";
-import UserProfile from "./pages/User/UserProfile";
+import UserProfile from "./pages/User/UserProfile"; // Убедитесь, что путь правильный
 import MainPage from "./components/Main/MainPage";
 import Register from "./pages/Sign/Register";
 import "./App.css";
@@ -80,7 +79,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/profiles/:userId" element={<UserProfile />} />
+        <Route path="/profiles/:userId" element={<UserProfile />} /> {/* Используем UserProfile как JSX-компонент */}
       </Routes>
       
     </BrowserRouter>

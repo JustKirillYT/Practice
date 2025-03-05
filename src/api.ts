@@ -72,10 +72,16 @@ export const getProfileByUserId = async (userId: number): Promise<any> => {
   }
 };
 
-export const updateProfile = async (profileData: any): Promise<void> => {
+interface ProfileData {
+  name?: string;
+  purpose?: string;
+  avatar?: string;
+}
+
+export const updateProfile = async (profileData: ProfileData, userId: number): Promise<void> => {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await api.put('/profile/update', profileData, {
+    const response = await api.patch(`/profile/userUp/${userId}`, profileData, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
