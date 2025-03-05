@@ -14,8 +14,8 @@ const MainPage: React.FC = () => {
 
   return (
     <div >
-        <HeroSection/>
-        <MainCarousel/>
+       <HeroSection/>
+       <MainCarousel/>
     <Footer/>
     </div>
 )};

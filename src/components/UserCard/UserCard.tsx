@@ -1,47 +1,62 @@
-import React from 'react';
+// UserCard.tsx
 import styled from 'styled-components';
 
 interface UserCardProps {
-  avatar: string; // Ссылка на аватарку
-  name: string; // Имя пользователя
-  description: string; // Описание
-  isCenter?: boolean; // Флаг, указывающий, что карточка центральная
+  avatar: string;
+  name: string;
+  description: string;
+  isActive?: boolean;
 }
 
-const CardContainer = styled.div<{ isCenter?: boolean }>`
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  width: ${({ isCenter }) => (isCenter ? '250px' : '200px')};
-  height: ${({ isCenter }) => (isCenter ? '250px' : '200px')};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+const CardContainer = styled.div<{ isActive?: boolean }>`
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  cursor: ${({ isCenter }) => (isCenter ? 'pointer' : 'default')};
-  opacity: ${({ isCenter }) => (isCenter ? '1' : '0.6')};
-  filter: ${({ isCenter }) => (isCenter ? 'none' : 'brightness(0.8)')};
+  margin: 0 auto;
+  width: 100%;
+  transform: ${({ isActive }) => (isActive ? 'scale(1)' : 'scale(0.9)')};
+  opacity: ${({ isActive }) => (isActive ? 1 : 0.7)};
+  filter: ${({ isActive }) => (isActive ? 'none' : 'brightness(0.95)')};
+
+  @media (max-width: 480px) {
+    padding: 15px;
+    transform: none !important;
+  }
 `;
 
 const Avatar = styled.img`
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
+  margin-bottom: 16px;
+  object-fit: cover;
+
+  @media (max-width: 480px) {
+    width: 80px;
+    height: 80px;
+  }
 `;
 
 const Name = styled.h3`
-  margin: 10px 0;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: #333;
+  text-align: center;
 `;
 
 const Description = styled.p`
+  font-size: 0.9rem;
   color: #666;
+  text-align: center;
+  line-height: 1.4;
 `;
 
-const UserCard = ({ avatar, name, description, isCenter }: UserCardProps) => {
+const UserCard: React.FC<UserCardProps> = ({ avatar, name, description, isActive }) => {
   return (
-    <CardContainer isCenter={isCenter}>
+    <CardContainer isActive={isActive}>
       <Avatar src={avatar} alt={name} />
       <Name>{name}</Name>
       <Description>{description}</Description>

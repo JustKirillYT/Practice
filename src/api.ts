@@ -23,6 +23,15 @@ interface AuthResponse {
   };
 }
 
+
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Вход
 export const loginUser = async (data: AuthData): Promise<AuthResponse> => {
   try {
@@ -36,6 +45,7 @@ export const loginUser = async (data: AuthData): Promise<AuthResponse> => {
   }
 };
 
+
 // Регистрация
 export const registerUser = async (data: AuthData): Promise<AuthResponse> => {
   try {
@@ -44,6 +54,34 @@ export const registerUser = async (data: AuthData): Promise<AuthResponse> => {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data?.error || 'Ошибка регистрации');
+    }
+    throw new Error('Неизвестная ошибка');
+  }
+};
+
+// Получить профиль по ID пользователя
+export const getProfileByUserId = async (userId: number): Promise<any> => {
+  try {
+    const response = await api.get(`/profile/user/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.error || 'Ошибка получения профиля');
+    }
+    throw new Error('Неизвестная ошибка');
+  }
+};
+
+export const updateProfile = async (profileData: any): Promise<void> => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await api.put('/profile/update', profileData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.error || 'Ошибка обновления профиля');
     }
     throw new Error('Неизвестная ошибка');
   }

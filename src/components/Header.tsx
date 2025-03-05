@@ -27,7 +27,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenAuthModal, user, onLogout }) => {
     <header className={`header ${isScrolled ? 'scrolled' : 'transparent'}`}>
       <div className="logo">ShareYourHappiness</div>
       <nav className="nav">
-        {/* Дополнительные ссылки или элементы навигации */}
       </nav>
       <div>
         {user ? (

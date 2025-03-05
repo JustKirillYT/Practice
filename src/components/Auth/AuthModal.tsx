@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom'; // Импортируем ReactDOM для Portal
 import styles from '../../styles/Auth/AuthModal.module.css';
-import { loginUser, registerUser } from '../../api'; // Импортируйте API
+import { loginUser, registerUser } from '../../api';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLogin: (userData: { login: string; avatarUrl: string }) => void;
+  onLogin: (userData: { id: number, login: string; avatarUrl: string }) => void;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
@@ -16,7 +17,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
   });
   const [error, setError] = useState<string | null>(null);
 
-  // Функция для валидации пароля
   const validatePassword = (password: string): string | null => {
     if (password.length < 6) {
       return 'Пароль должен содержать минимум 6 символов';
@@ -35,8 +35,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
       document.body.classList.add(styles.mdPerspective);
     } else {
       document.body.classList.remove(styles.mdPerspective);
-      setFormData({ login: '', password: '' }); // Сброс формы при закрытии
-      setError(null); // Сброс ошибки при закрытии
+      setFormData({ login: '', password: '' });
+      setError(null);
     }
   }, [isOpen]);
 
@@ -49,7 +49,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
     e.preventDefault();
     setError(null);
 
-    // Валидация пароля (только для регистрации)
     if (!isLogin) {
       const passwordError = validatePassword(formData.password);
       if (passwordError) {
@@ -61,27 +60,28 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
     try {
       let response;
       if (isLogin) {
-        // Вход
         response = await loginUser(formData);
       } else {
-        // Регистрация
         response = await registerUser(formData);
       }
 
-      // Сохраняем токен в localStorage
-      localStorage.setItem('token', response.token);
-
-      // Передаем данные пользователя в родительский компонент
-      onLogin({
+      localStorage.setItem('user', JSON.stringify({
         login: response.user.login,
-        avatarUrl: response.user.avatarUrl || 'https://avatars.mds.yandex.net/i?id=373b48b71c8b3fa6d7d5f9c5dbdf5457_sr-4826347-images-thumbs&n=13', // Заглушка для аватара
+        avatarUrl: response.user.avatarUrl || 'https://avatars.mds.yandex.net/i?id=373b48b71c8b3fa6d7d5f9c5dbdf5457_sr-4826347-images-thumbs&n=13',
+        id: response.user.id,
+        token: response.token,
+      }));
+
+      onLogin({
+        id: response.user.id,
+        login: response.user.login,
+        avatarUrl: response.user.avatarUrl || 'https://avatars.mds.yandex.net/i?id=373b48b71c8b3fa6d7d5f9c5dbdf5457_sr-4826347-images-thumbs&n=13',
       });
 
-      // Закрываем модальное окно
       onClose();
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message); // Отображаем ошибку
+        setError(err.message);
       } else {
         setError('Неизвестная ошибка');
       }
@@ -90,11 +90,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
 
   if (!isOpen) return null;
 
-  return (
+  // Используем React Portal для рендеринга модального окна
+  return ReactDOM.createPortal(
     <>
       <div className={`${styles.mdModal} ${isOpen ? styles.mdShow : ''}`}>
         <button className={styles.closeButton} onClick={onClose}>×</button>
-        
         <h2 style={{ textAlign: 'center', marginBottom: '25px', color: '#333' }}>
           {isLogin ? 'Вход' : 'Регистрация'}
         </h2>
@@ -139,7 +139,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
       </div>
 
       <div className={`${styles.mdOverlay} ${isOpen ? styles.mdShow : ''}`} onClick={onClose} />
-    </>
+    </>,
+    document.body // Рендерим модальное окно в body
   );
 };
 
