@@ -8,7 +8,9 @@ import MainPage from "./components/Main/MainPage";
 import Register from "./pages/Sign/Register";
 import "./App.css";
 import "./styles/BorderBar.css";
+import 'typeface-inter'; 
 import MainCarousel from "./components/Main/MainCarousel";
+import Footer from "./components/Footer";
 
 const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -81,7 +83,7 @@ const App: React.FC = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/profiles/:userId" element={<UserProfile />} /> {/* Используем UserProfile как JSX-компонент */}
       </Routes>
-      
+      <Footer/>
     </BrowserRouter>
   );
 };

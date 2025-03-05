@@ -78,13 +78,28 @@ interface ProfileData {
   avatar?: string;
 }
 
-export const updateProfile = async (profileData: ProfileData, userId: number): Promise<void> => {
+export interface Profile {
+  id: number;
+  name: string;
+  purpose: string;
+  avatar: string;
+  userid: number;
+}
+
+export const updateProfile = async (
+  profileData: Partial<Profile>,
+  userId: number
+): Promise<Profile> => {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await api.patch(`/profile/userUp/${userId}`, profileData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+    const response = await api.patch<Profile>(
+      `/profile/userUp/${userId}`,
+      profileData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data; // Возвращаем обновленный профиль
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data?.error || 'Ошибка обновления профиля');

@@ -1,9 +1,10 @@
 .hero {
+  margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh; /* Занимает всю высоту экрана */
-    background: linear-gradient(45deg, #000000da, #000000); /* Градиентный фон */
+
     padding: 20px;
     text-align: center;
   }

@@ -16,3 +16,8 @@ main {
   padding: 1rem;  
   background-color: #e9c46a;
 }
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
