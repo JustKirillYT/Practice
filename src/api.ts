@@ -72,6 +72,57 @@ export const getProfileByUserId = async (userId: number): Promise<any> => {
   }
 };
 
+// Перевод средств
+
+
+export const transferMoney = async (data: {
+  senderId: number;
+  recipientId: number;
+  amount: number;
+  massage?: string;
+}) => {
+  try {
+    const response = await fetch('http://localhost:3000/api/transactions/transfer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ошибка: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Ошибка при переводе средств:', error);
+    throw error;
+  }
+};
+
+export const getBalance = async (userId: number) => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/balance/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ошибка: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    return result.balance; // Возвращаем баланс из ответа сервера
+  } catch (error) {
+    console.error('Ошибка при получении баланса:', error);
+    throw error;
+  }
+};
+
 interface ProfileData {
   name?: string;
   purpose?: string;

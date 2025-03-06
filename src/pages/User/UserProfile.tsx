@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getProfileByUserId, updateProfile } from '../../api';
+import { useParams } from 'react-router-dom';
+import { getProfileByUserId, transferMoney, getBalance, updateProfile } from '../../api';
 import './UserProfile.css';
 
 interface Profile {
@@ -9,7 +9,7 @@ interface Profile {
   purpose: string;
   avatar: string;
   userid: number;
-  balance?: number; // Добавляем баланс
+  balance?: number;
 }
 
 const UserProfile: React.FC = () => {
@@ -21,43 +21,50 @@ const UserProfile: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [donationAmount, setDonationAmount] = useState('');
   const [donationMessage, setDonationMessage] = useState('');
+  const [balance, setBalance] = useState<number | null>(null);
 
-  const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const currentUserId = currentUser.id || localStorage.getItem('userId');
+  const currentUserId = Number(currentUser.id) || Number(localStorage.getItem('userId'));
+  const canEdit = currentUserId === Number(userId);
 
+  // Загрузка профиля
   useEffect(() => {
-    let isMounted = true;
-    
     const fetchProfile = async () => {
       try {
         if (!userId) {
           throw new Error('User ID is undefined');
         }
-        
+
         const profileData = await getProfileByUserId(Number(userId));
-        if (isMounted) {
-          setProfile(profileData);
-          setFormData(profileData);
-          setLoading(false);
-        }
+        setProfile(profileData);
+        setFormData(profileData);
+        setLoading(false);
       } catch (err) {
-        if (isMounted) {
-          setError('Ошибка при загрузке профиля');
-          setLoading(false);
-          console.error(err);
-        }
+        setError('Ошибка при загрузке профиля');
+        setLoading(false);
+        console.error(err);
       }
     };
 
-    if (userId) {
-      fetchProfile();
-    }
-
-    return () => {
-      isMounted = false;
-    };
+    fetchProfile();
   }, [userId]);
+
+  // Загрузка баланса
+  const fetchBalance = async () => {
+    try {
+      if (!userId) return;
+      const balance = await getBalance(Number(userId));
+      setBalance(balance);
+    } catch (error) {
+      console.error('Ошибка при загрузке баланса:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (canEdit) {
+      fetchBalance();
+    }
+  }, [userId, canEdit]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -75,13 +82,12 @@ const UserProfile: React.FC = () => {
         throw new Error('User ID is undefined');
       }
 
-      // Проверяем, что ссылка на аватарку валидна
       if (formData.avatar && !isValidUrl(formData.avatar)) {
         throw new Error('Некорректная ссылка на аватарку');
       }
 
       const updatedProfile = await updateProfile(formData, Number(userId));
-      setProfile(updatedProfile); // Обновляем профиль
+      setProfile(updatedProfile);
       setIsEditing(false);
       setError(null);
     } catch (error) {
@@ -90,13 +96,56 @@ const UserProfile: React.FC = () => {
     }
   };
 
-  // Функция для проверки валидности URL
   const isValidUrl = (url: string): boolean => {
     try {
       new URL(url);
       return true;
     } catch {
       return false;
+    }
+  };
+
+  const handleDonate = async () => {
+    if (!donationAmount) {
+      alert('Пожалуйста, укажите сумму пожертвования');
+      return;
+    }
+
+    const amount = parseInt(donationAmount);
+    if (isNaN(amount) || amount <= 0) {
+      alert('Некорректная сумма');
+      return;
+    }
+
+    if (!userId) {
+      alert('Не выбран получатель');
+      return;
+    }
+
+    try {
+      const result = await transferMoney({
+        senderId: currentUserId,
+        recipientId: Number(userId),
+        amount: amount,
+        massage: donationMessage,
+      });
+
+      console.log('Ответ сервера:', result);
+
+      if (!result || !result.id) {
+        throw new Error('Не удалось выполнить перевод: некорректный ответ от сервера');
+      }
+
+      alert(`Спасибо за пожертвование ${amount} ₽!`);
+      setDonationAmount('');
+      setDonationMessage('');
+
+      if (canEdit) {
+        await fetchBalance();
+      }
+    } catch (error) {
+      console.error('Ошибка при переводе средств:', error);
+      alert(error instanceof Error ? error.message : 'Не удалось выполнить перевод');
     }
   };
 
@@ -112,47 +161,68 @@ const UserProfile: React.FC = () => {
     return <div className="error-container">Профиль не найден</div>;
   }
 
-  
-
-  const handleDonate = () => {
-    if (!donationAmount) {
-      alert('Пожалуйста, укажите сумму пожертвования');
-      return;
-    }
-    
-    const amount = parseInt(donationAmount);
-    if (isNaN(amount)) {
-      alert('Некорректная сумма');
-      return;
-    }
-
-    alert(`Спасибо за пожертвование ${amount} ₽!\nСообщение: ${donationMessage || 'Без сообщения'}`);
-    setDonationAmount('');
-    setDonationMessage('');
-  };
-
-  const { avatar, userid, name, purpose, balance } = profile;
-  const canEdit = currentUserId === Number(userId);
+  const { avatar, name, purpose } = profile;
 
   return (
     <div className="profile-container">
       <h1 className="profile-header">{name}</h1>
-      
+
       <div className="avatar-section">
-        <img 
-          src={avatar || '../../default-avatar.jpg'} 
-          alt="Аватар" 
+        <img
+          src={avatar || '../../default-avatar.jpg'}
+          alt="Аватар"
           className="profile-avatar"
         />
         <p className="profile-purpose">{purpose}</p>
         <div className="action-buttons">
           {canEdit ? (
-            <button 
-              className="edit-button"
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              {isEditing ? 'Отмена' : 'Редактировать'}
-            </button>
+            <>
+              <button
+                className="edit-button"
+                onClick={() => setIsEditing(!isEditing)}
+              >
+                {isEditing ? 'Отмена' : 'Редактировать'}
+              </button>
+              {isEditing && (
+                <div className="edit-form">
+                  <div className="form-group">
+                    <label>Имя</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name || ''}
+                      onChange={handleChange}
+                      className="form-input"
+                      placeholder="Введите имя"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Цель</label>
+                    <textarea
+                      name="purpose"
+                      value={formData.purpose || ''}
+                      onChange={handleChange}
+                      className="form-textarea"
+                      placeholder="Введите цель"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Ссылка на аватар</label>
+                    <input
+                      type="text"
+                      name="avatar"
+                      value={formData.avatar || ''}
+                      onChange={handleChange}
+                      className="form-input"
+                      placeholder="Введите ссылку на аватар"
+                    />
+                  </div>
+                  <button className="save-button" onClick={handleSave}>
+                    Сохранить
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="donation-section">
               <div className="donation-inputs">
@@ -172,7 +242,7 @@ const UserProfile: React.FC = () => {
                   onChange={(e) => setDonationMessage(e.target.value)}
                 />
               </div>
-              <button 
+              <button
                 className="donate-button"
                 onClick={handleDonate}
               >
@@ -183,56 +253,14 @@ const UserProfile: React.FC = () => {
         </div>
       </div>
 
-      {canEdit && (
-        <div className="balance-section">
-          <h3 className="balance-title">Ваш баланс</h3>
-          <p className="balance-amount">{balance || 0} ₽</p>
-        </div>
-      )}
-
-{isEditing && (
-  <div className="edit-form">
-    <div className="form-group">
-      <label>Имя:</label>
-      <input
-        type="text"
-        name="name"
-        value={formData.name || ''}
-        onChange={handleChange}
-        className="form-input"
-      />
-    </div>
-
-    <div className="form-group">
-      <label>Цель:</label>
-      <textarea
-        name="purpose"
-        value={formData.purpose || ''}
-        onChange={handleChange}
-        className="form-textarea"
-        rows={4}
-      />
-    </div>
-
-    <div className="form-group">
-      <label>Аватар (URL):</label>
-      <input
-        type="text"
-        name="avatar"
-        value={formData.avatar || ''}
-        onChange={handleChange}
-        className="form-input"
-        placeholder="Введите ссылку на изображение"
-      />
-    </div>
-
-    <button className="save-button" onClick={handleSave}>
-      Сохранить
-    </button>
-  </div>
-)}
-
-      {error && <div className="error-message">{error}</div>}
+      <div className="balance-section">
+        {canEdit && (
+          <>
+            <h3 className="balance-title">Ваш баланс</h3>
+            <p className="balance-amount">{balance !== null ? `${balance} ₽` : 'Загрузка...'}</p>
+          </>
+        )}
+      </div>
     </div>
   );
 };

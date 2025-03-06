@@ -27,7 +27,7 @@ const App: React.FC = () => {
   
     if (token) {
       try {
-        const response = await axios.get("http://localhost:3000/api/users", {
+        const response = await axios.get("https://trinity-pub-breast-electron.trycloudflare.com/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
   

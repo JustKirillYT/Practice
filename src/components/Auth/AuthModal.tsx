@@ -6,7 +6,7 @@ import { loginUser, registerUser } from '../../api';
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLogin: (userData: { id: number, login: string; avatarUrl: string }) => void;
+  onLogin: (userData: { id: number; login: string; avatarUrl: string }) => void;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
@@ -16,6 +16,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
     password: '',
   });
   const [error, setError] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null); // Состояние для аватарки
 
   const validatePassword = (password: string): string | null => {
     if (password.length < 6) {
@@ -33,6 +34,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add(styles.mdPerspective);
+      // Загружаем аватарку из localStorage при открытии модального окна
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user.avatarUrl) {
+        setAvatarUrl(user.avatarUrl);
+      }
     } else {
       document.body.classList.remove(styles.mdPerspective);
       setFormData({ login: '', password: '' });
@@ -65,17 +71,23 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
         response = await registerUser(formData);
       }
 
-      localStorage.setItem('user', JSON.stringify({
+      // Сохраняем данные пользователя в localStorage
+      const userData = {
+        id: response.user.id,
         login: response.user.login,
         avatarUrl: response.user.avatarUrl || 'https://avatars.mds.yandex.net/i?id=373b48b71c8b3fa6d7d5f9c5dbdf5457_sr-4826347-images-thumbs&n=13',
-        id: response.user.id,
         token: response.token,
-      }));
+      };
+      localStorage.setItem('user', JSON.stringify(userData));
 
+      // Обновляем состояние аватарки
+      setAvatarUrl(userData.avatarUrl);
+
+      // Передаем данные пользователя в родительский компонент
       onLogin({
-        id: response.user.id,
-        login: response.user.login,
-        avatarUrl: response.user.avatarUrl || 'https://avatars.mds.yandex.net/i?id=373b48b71c8b3fa6d7d5f9c5dbdf5457_sr-4826347-images-thumbs&n=13',
+        id: userData.id,
+        login: userData.login,
+        avatarUrl: userData.avatarUrl,
       });
 
       onClose();
@@ -98,6 +110,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin }) => {
         <h2 style={{ textAlign: 'center', marginBottom: '25px', color: '#333' }}>
           {isLogin ? 'Вход' : 'Регистрация'}
         </h2>
+
+        {/* Отображаем аватарку, если она есть */}
+        {avatarUrl && (
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <img
+              src={avatarUrl}
+              alt="Аватар"
+              style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }}
+            />
+          </div>
+        )}
 
         {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
 
